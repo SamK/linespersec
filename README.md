@@ -21,8 +21,7 @@ Usage
 
 Where "logfile" is the log file
 
-Example:
-    qpslog /var/log/apache/access.log
+Example: `qpslog /var/log/apache/access.log`
 
 Author
 ------
