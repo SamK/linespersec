@@ -1,7 +1,9 @@
 #!/bin/bash
 # linespersec display the lines written per second in a file
-#
 # In other words: it shows the difference of line count since its last execution.
+#
+# https://github.com/samyboy/linespersec
+# Author: Samuel Krieg <samuel.krieg+github@gmail.com>
 #
 # Usage: linespersec <logfile>
 #
