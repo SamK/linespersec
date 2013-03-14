@@ -1,29 +1,29 @@
 #!/bin/bash
-# qpslog display the queries per second of a log file
+# lnps display the lines written per second in a file
 #
-# In other words: it shows the difference of line count in a period of time
+# In other words: it shows the difference of line count since its last execution.
 #
-# Usage: qpslog <logfile>
+# Usage: lnps <logfile>
 #
 
-usage="Usage: `basename $0` <log file>"
-logFile="$1"
+usage="Usage: `basename $0` <file>"
+targetFile="$1"
 
 # Create a sanitized datafile: "/" becomes ":"
-dataFile="${logFile//\//:}"
-dataFile="/tmp/qpslog_${dataFile}"
+dataFile="${targetFile//\//:}"
+dataFile="/tmp/lnps_${dataFile}"
 
 # Test for argument
-if [  ! -n "$logFile" ]
+if [  ! -n "$targetFile" ]
 then
  echo -e $usage
  exit 1
 fi
 
-# Test for logFile existence
-if [ ! -e "$logFile" ]
+# Test for targetFile existence
+if [ ! -e "$targetFile" ]
 then
- echo "$logFile does not exist."
+ echo "$targetFile does not exist."
  echo 
  echo -e $usage
  exit 2
@@ -36,7 +36,7 @@ lines(){
 
 # find current date and value
 currTime=$( date +%s )
-currValue=$( lines "$logFile" )
+currValue=$( lines "$targetFile" )
 
 if [ -f $dataFile ]; then
     # get previous date and value
@@ -53,8 +53,8 @@ fi
 seconds=$(( $currTime - $lastMtime ))
 requests=$(( $currValue - $lastValue ))
 
-# if the log file has reset, then then number of returned queries is below zero
-# the only available value is the current value
+# if the file has is smaller (ex: a rotated log file), then then number of returned queries is below zero
+# the only available value is the current value. Not accurate but better than nothing
 if [ $requests -lt 0 ]; then
     requests=$currValue
 fi
@@ -63,7 +63,11 @@ fi
 echo $currValue > $dataFile
 
 # output result
-echo "scale=3; $requests / $seconds" | bc -l
+result=$( echo "scale=3; $requests / $seconds" | bc -l )
+
+# bc -l does not display zero before the decimal if result < 1.
+# I think it's better with the zero
+echo ${result/#\./0.}
 
 exit 0
 
