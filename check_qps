@@ -1,7 +1,6 @@
 #!/bin/bash
 #
-# This is a Nagios plugin to check the queries per seconds of something
-# The calculations are based on a log file or something similar
+# This is a Nagios plugin used to check the queries per seconds of a log file (or something similar).
 #
 # Author: Samuel Krieg <samuel.krieg+github@gmail.com>
 #
@@ -52,7 +51,7 @@ EOF
 }
 
 #
-# verbos output
+# verbose output
 #
 echov (){
   [ "$VERBOSITY_LEVEL" -ge "1" ] && echo $@
