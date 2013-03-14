@@ -10,6 +10,8 @@
 #
 #
 
+set -e
+
 LINESPERSEC="/usr/local/bin/linespersec"
 
 STATE_OK=0
