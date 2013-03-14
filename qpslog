@@ -1,9 +1,9 @@
 #!/bin/bash
-# lnps display the lines written per second in a file
+# linespersec display the lines written per second in a file
 #
 # In other words: it shows the difference of line count since its last execution.
 #
-# Usage: lnps <logfile>
+# Usage: linespersec <logfile>
 #
 
 usage="Usage: `basename $0` <file>"
@@ -11,7 +11,7 @@ targetFile="$1"
 
 # Create a sanitized datafile: "/" becomes ":"
 dataFile="${targetFile//\//:}"
-dataFile="/tmp/lnps_${dataFile}"
+dataFile="/tmp/linespersec_${dataFile}"
 
 # Test for argument
 if [  ! -n "$targetFile" ]
