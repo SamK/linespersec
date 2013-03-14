@@ -136,10 +136,17 @@ fi
 #
 # Main program
 #
-
+set +e
 value=$( $LINESPERSEC $FILE )
+retcode=$?
+set -e
 if [ -z "$value" ]; then
     value=0
+fi
+
+if [ "$retcode" != "0" ]; then
+    echo "Error running \"$LINESPERSEC $FILE\" Exit code is \"$retcode\", output is \"$value\""
+    exit $STATE_CRITICAL
 fi
 
 intValue=${value/\.*}
