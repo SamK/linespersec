@@ -63,7 +63,7 @@ fi
 echo $currValue > $dataFile
 
 # output result
-result=$( echo "scale=3; $requests / $seconds" | bc -l )
+result=$( echo "scale=1; $requests / $seconds" | bc -l )
 
 # bc -l does not display zero before the decimal if result < 1.
 # I think it's better with the zero
