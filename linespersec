@@ -21,7 +21,12 @@ fi
 
 # Test for targetFile existence
 if [ ! -f "$targetFile" ]; then
-    echo "${targetFile} does not exist or is not a file."
+    echo "The file \"${targetFile}\" is not a file."
+    exit 2
+fi
+
+if [ ! -r "$targetFile" ]; then
+    echo "The file \"${targetFile}\" is not readable."
     exit 2
 fi
 
