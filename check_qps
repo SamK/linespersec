@@ -39,15 +39,15 @@ show_usage(){
 Nagios plugin: check the queries per second based on a log file
 The script assumes one line is one query.
 
-Usage: check_qps [-v] -f <logfile> -w <qps> -c <qps>
+Usage: check_qps -f <file> [-w <qps>] [-c <qps>] [-v]
 
 Options:
  -h
     Print detailed help screen
  -V
     Print version information
- -f logfile
-    The log file to check
+ -f file
+    The file to check
  -w INTEGER
     Exit with WARNING status if queries/sec is greater than INTEGER
  -c INTEGER
@@ -78,7 +78,7 @@ fi
 #
 # parse arguments
 #
-while getopts ":hvVf:c:w:"   OPTION
+while getopts ":hvVf:c:w:" OPTION
   do
   case "$OPTION" in
     "V")
@@ -121,7 +121,7 @@ done
 #
 # Check arguments validity
 #
-if [ -z "$FILE" ] || [ -z "$WARNING_VALUE" ] || [ -z "$CRITICAL_VALUE" ]; then
+if [ -z "$FILE" ]; then
   echo "Missing arguments"
   show_usage
   exit $STATE_UNKNOWN
@@ -138,18 +138,22 @@ fi
 #
 
 value=$( $LINESPERSEC $FILE )
+if [ -z "$value" ]; then
+    value=0
+fi
+
 intValue=${value/\.*}
 
 NAGIOS_STATUS="OK"
 
-if [ "$intValue" -ge "$CRITICAL_VALUE" ]; then
+if [ -n "$CRITICAL_VALUE" ] && [ "$intValue" -ge "$CRITICAL_VALUE" ]; then
     # this is critical
     echo "$intValue -ge $CRITICAL_VALUE"
     NAGIOS_STATUS="CRITICAL"
     EXIT_CODE=$STATE_CRITICAL
 fi
 
-if [ "$intValue" -ge "$WARNING_VALUE" ]; then
+if [ -n "$WARNING_VALUE" ] && [ "$intValue" -ge "$WARNING_VALUE" ]; then
     echo "$intValue -ge $WARNING_VALUE"
     NAGIOS_STATUS="WARNING"
     # this is warning
