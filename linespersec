@@ -5,7 +5,7 @@
 # https://github.com/samyboy/linespersec
 # Author: Samuel Krieg <samuel.krieg+github@gmail.com>
 #
-
+set -e 
 usage="Usage: `basename $0` <file>"
 targetFile="$1"
 
@@ -14,19 +14,15 @@ dataFile="${targetFile//\//:}"
 dataFile="/tmp/linespersec_${dataFile}"
 
 # Test for argument
-if [  ! -n "$targetFile" ]
-then
- echo -e $usage
- exit 1
+if [  ! -n "$targetFile" ]; then
+    echo -e $usage
+    exit 1
 fi
 
 # Test for targetFile existence
-if [ ! -e "$targetFile" ]
-then
- echo "$targetFile does not exist."
- echo 
- echo -e $usage
- exit 2
+if [ ! -f "$targetFile" ]; then
+    echo "${targetFile} does not exist or is not a file."
+    exit 2
 fi
 
 # this function counts lines
