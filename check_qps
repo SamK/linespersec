@@ -2,7 +2,12 @@
 #
 # This is a Nagios plugin used to check the queries per seconds of a log file (or something similar).
 #
+# The script "linespersec" is required.
+# It's available at https://github.com/samyboy/linespersec
+#
+#
 # Author: Samuel Krieg <samuel.krieg+github@gmail.com>
+#
 #
 
 QPSLOG="/usr/local/bin/linespersec"
