@@ -5,8 +5,6 @@
 # https://github.com/samyboy/linespersec
 # Author: Samuel Krieg <samuel.krieg+github@gmail.com>
 #
-# Usage: linespersec <logfile>
-#
 
 usage="Usage: `basename $0` <file>"
 targetFile="$1"

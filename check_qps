@@ -10,7 +10,7 @@
 #
 #
 
-QPSLOG="/usr/local/bin/linespersec"
+LINESPERSEC="/usr/local/bin/linespersec"
 
 STATE_OK=0
 STATE_WARNING=1
@@ -135,7 +135,7 @@ fi
 # Main program
 #
 
-value=$( $QPSLOG $FILE )
+value=$( $LINESPERSEC $FILE )
 intValue=${value/\.*}
 
 NAGIOS_STATUS="OK"
