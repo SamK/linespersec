@@ -1,0 +1,69 @@
+#!/bin/bash
+# qpslog display the queries per second of a log file
+#
+# In other words: it shows the difference of line count in a period of time
+#
+# Usage: qpslog <logfile>
+#
+
+usage="Usage: `basename $0` <log file>"
+logFile="$1"
+
+# Create a sanitized datafile: "/" becomes ":"
+dataFile="${logFile//\//:}"
+dataFile="/tmp/qpslog_${dataFile}"
+
+# Test for argument
+if [  ! -n "$logFile" ]
+then
+ echo -e $usage
+ exit 1
+fi
+
+# Test for logFile existence
+if [ ! -e "$logFile" ]
+then
+ echo "$logFile does not exist."
+ echo 
+ echo -e $usage
+ exit 2
+fi
+
+# this function counts lines
+lines(){
+    wc -l "$1" | sed 's/\([0-9]*\).*/\1/'
+}
+
+# find current date and value
+currTime=$( date +%s )
+currValue=$( lines "$logFile" )
+
+if [ -f $dataFile ]; then
+    # get previous date and value
+    lastMtime=$( stat -c %Y "$dataFile" )
+    lastValue=$( cat "$dataFile" )
+else
+    # if first run, save and quit
+    echo $currValue > $dataFile
+    echo First run
+    exit 0
+fi
+
+# calculate
+seconds=$(( $currTime - $lastMtime ))
+requests=$(( $currValue - $lastValue ))
+
+# if the log file has reset, then then number of returned queries is below zero
+# the only available value is the current value
+if [ $requests -lt 0 ]; then
+    requests=$currValue
+fi
+
+# write results
+echo $currValue > $dataFile
+
+# output result
+echo "scale=3; $requests / $seconds" | bc -l
+
+exit 0
+
