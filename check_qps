@@ -1,0 +1,159 @@
+#!/bin/bash
+#
+# This is a Nagios plugin to check the queries per seconds of something
+# The calculations are based on a log file or something similar
+#
+# Author: Samuel Krieg <samuel.krieg+github@gmail.com>
+#
+
+QPSLOG="/usr/local/bin/linespersec"
+
+STATE_OK=0
+STATE_WARNING=1
+STATE_CRITICAL=2
+STATE_UNKNOWN=3
+
+# Default exit code
+EXIT_CODE=$STATE_OK
+
+SERVICE_NAME="check_qps"
+VERBOSITY_LEVEL=0
+
+show_version(){
+  cat <<EOF
+check_qps v1
+Samuel Krieg <samuel.krieg@gmail.com>
+
+EOF
+}
+
+show_usage(){
+  show_version
+  cat <<EOF
+Nagios plugin: check the queries per second based on a log file
+The script assumes one line is one query.
+
+Usage: check_qps [-v] -f <logfile> -w <qps> -c <qps>
+
+Options:
+ -h
+    Print detailed help screen
+ -V
+    Print version information
+ -f logfile
+    The log file to check
+ -w INTEGER
+    Exit with WARNING status if queries/sec is greater than INTEGER
+ -c INTEGER
+    Exit with CRITICAL status if queries/sec is greater than INTEGER
+ -v 
+    Verbose output
+EOF
+}
+
+#
+# verbos output
+#
+echov (){
+  [ "$VERBOSITY_LEVEL" -ge "1" ] && echo $@
+}
+
+#
+# Command arguments handling
+# FIXME: handle --help and --version
+
+# script invoked with no command line args: exit with error
+if [ $# -eq "0" ]
+then
+  show_usage
+  exit $STATE_UNKNOWN
+fi  
+
+#
+# parse arguments
+#
+while getopts ":hvVf:c:w:"   OPTION
+  do
+  case "$OPTION" in
+    "V")
+      show_version
+      exit $STATE_OK
+      ;;
+    "h")
+      show_usage
+      exit $STATE_OK
+      ;;
+    "w")
+      WARNING_VALUE=$OPTARG
+      ;;
+    "c")
+      CRITICAL_VALUE=$OPTARG
+      ;;
+    "f")
+      FILE=$OPTARG
+      ;;
+    "v")
+      VERBOSITY_LEVEL=$(($VERBOSITY_LEVEL + 1))
+      echo "VERBOSITY_LEVEL = $VERBOSITY_LEVEL"
+      ;;
+    "?")
+      echo "Unknown option $OPTARG"
+      exit $STATE_UNKNOWN
+      ;;
+    ":")
+      echo "No argument value for option $OPTARG"
+      exit $STATE_UNKNOWN
+      ;;
+    *)
+       # Should not occur
+      echo "Unknown error while processing options"
+      exit $STATE_UNKNOWN
+      ;;
+  esac
+done
+
+#
+# Check arguments validity
+#
+if [ -z "$FILE" ] || [ -z "$WARNING_VALUE" ] || [ -z "$CRITICAL_VALUE" ]; then
+  echo "Missing arguments"
+  show_usage
+  exit $STATE_UNKNOWN
+fi
+
+# check if file exists
+if [ ! -f "$FILE" ]; then
+    echo "\"$FILE\": no such file"
+    exit $STATE_UNKNOWN
+fi
+
+#
+# Main program
+#
+
+value=$( $QPSLOG $FILE )
+intValue=${value/\.*}
+
+NAGIOS_STATUS="OK"
+
+if [ "$intValue" -ge "$CRITICAL_VALUE" ]; then
+    # this is critical
+    echo "$intValue -ge $CRITICAL_VALUE"
+    NAGIOS_STATUS="CRITICAL"
+    EXIT_CODE=$STATE_CRITICAL
+fi
+
+if [ "$intValue" -ge "$WARNING_VALUE" ]; then
+    echo "$intValue -ge $WARNING_VALUE"
+    NAGIOS_STATUS="WARNING"
+    # this is warning
+    EXIT_CODE=$STATE_WARNING
+fi
+
+
+echo "$NAGIOS_STATUS | qps=${value};${WARNING_VALUE};${CRITICAL_VALUE}"
+#
+# Exit status
+#
+exit $EXIT_CODE
+
