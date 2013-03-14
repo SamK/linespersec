@@ -12,7 +12,7 @@
 
 set -e
 
-LINESPERSEC="/usr/local/bin/linespersec"
+LINESPERSEC="linespersec"
 
 STATE_OK=0
 STATE_WARNING=1
