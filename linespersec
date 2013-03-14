@@ -41,7 +41,6 @@ if [ -f $dataFile ]; then
 else
     # if first run, save and quit
     echo $currValue > $dataFile
-    echo First run
     exit 0
 fi
 
