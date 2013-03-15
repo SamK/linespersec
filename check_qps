@@ -168,7 +168,8 @@ if [ -n "$WARNING_VALUE" ] && [ "$intValue" -ge "$WARNING_VALUE" ]; then
 fi
 
 
-echo "$NAGIOS_STATUS: ${FILE} shows ${value} queries/sec.| qps=${value};${WARNING_VALUE};${CRITICAL_VALUE}"
+echo "$NAGIOS_STATUS: ${FILE} shows ${value} queries/sec.| qps=${value};${WARNING_VALUE};${CRITICAL_VALUE};0;"
+
 #
 # Exit status
 #
